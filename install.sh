@@ -44,6 +44,22 @@ if [ -f "$CLAUDE_SETTINGS" ]; then
   else
     # Merge hooks into existing settings
     jq '.hooks = (.hooks // {}) * {
+      "SessionStart": [{
+        "matcher": "",
+        "hooks": [{
+          "type": "command",
+          "command": "sleep 1 && claude-tab-title active",
+          "async": true
+        }]
+      }],
+      "UserPromptSubmit": [{
+        "matcher": "",
+        "hooks": [{
+          "type": "command",
+          "command": "sleep 1 && claude-tab-title active",
+          "async": true
+        }]
+      }],
       "Notification": [{
         "matcher": "",
         "hooks": [{
@@ -61,7 +77,7 @@ if [ -f "$CLAUDE_SETTINGS" ]; then
         }]
       }]
     }' "$CLAUDE_SETTINGS" > "${CLAUDE_SETTINGS}.tmp" && mv "${CLAUDE_SETTINGS}.tmp" "$CLAUDE_SETTINGS"
-    echo "    Added Notification and Stop hooks to $CLAUDE_SETTINGS"
+    echo "    Added hooks to $CLAUDE_SETTINGS"
   fi
 else
   # Create settings file with just hooks
@@ -69,6 +85,30 @@ else
   cat > "$CLAUDE_SETTINGS" <<'SETTINGS'
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sleep 1 && claude-tab-title active",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sleep 1 && claude-tab-title active",
+            "async": true
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "",

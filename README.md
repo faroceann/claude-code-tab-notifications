@@ -8,9 +8,9 @@ This project uses Claude Code [hooks](https://docs.anthropic.com/en/docs/claude-
 
 | State | Tab title |
 |-------|-----------|
+| Working | `Fix auth middleware` |
 | Waiting for input | `🔔 WAITING — Fix auth middleware` |
 | Task complete | `✅ DONE — Fix auth middleware` |
-| Working | *(default Claude Code title)* |
 
 The topic is pulled from Claude Code's session metadata — it's the auto-generated conversation summary.
 
@@ -68,6 +68,30 @@ Add to `~/.claude/settings.json`:
 ```json
 {
   "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sleep 1 && claude-tab-title active",
+            "async": true
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sleep 1 && claude-tab-title active",
+            "async": true
+          }
+        ]
+      }
+    ],
     "Notification": [
       {
         "matcher": "",
