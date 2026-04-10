@@ -1,0 +1,42 @@
+#!/bin/bash
+# Sets the VS Code / Cursor terminal tab title with the Claude Code conversation topic.
+# Called by Claude Code hooks to show session status in the terminal tab sidebar.
+#
+# Usage: echo '{"session_id":"..."}' | claude-tab-title <mode>
+# Modes: waiting, active, done
+
+set -euo pipefail
+
+MODE="${1:-active}"
+
+# Read session_id from hook stdin (Claude Code passes JSON with session_id)
+SESSION_ID=$(jq -r '.session_id // empty' 2>/dev/null)
+
+TOPIC=""
+if [ -n "$SESSION_ID" ]; then
+  # Claude stores session metadata in ~/.claude/projects/<project-dir>/sessions-index.json
+  # The project dir name is the absolute PWD with / and . replaced by -
+  PROJECT_DIR="$HOME/.claude/projects/$(echo "$PWD" | tr '/.' '-')"
+  INDEX="$PROJECT_DIR/sessions-index.json"
+
+  if [ -f "$INDEX" ]; then
+    TOPIC=$(jq -r --arg sid "$SESSION_ID" \
+      '[.entries[] | select(.sessionId == $sid)][0].summary // empty' \
+      "$INDEX" 2>/dev/null)
+  fi
+fi
+
+# Fallback to directory name if no topic found (new sessions won't have one yet)
+if [ -z "$TOPIC" ] || [ "$TOPIC" = "Claude Code CLI Session Start" ]; then
+  TOPIC=$(basename "$PWD")
+fi
+
+case "$MODE" in
+  waiting) TITLE="🔔 WAITING — $TOPIC" ;;
+  done)    TITLE="✅ DONE — $TOPIC" ;;
+  *)       TITLE="$TOPIC" ;;
+esac
+
+# OSC 0 escape sequence sets the terminal title.
+# VS Code/Cursor pick this up when tabs.title is set to "${sequence}".
+printf '\033]0;%s\007' "$TITLE" >/dev/tty
