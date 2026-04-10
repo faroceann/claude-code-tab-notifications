@@ -37,7 +37,7 @@ Claude Code fires Notification hook
 ### Automatic
 
 ```bash
-git clone https://github.com/maxwellhammad/claude-code-tab-notifications.git
+git clone https://github.com/faroceann/claude-code-tab-notifications.git
 cd claude-code-tab-notifications
 ./install.sh
 ```
