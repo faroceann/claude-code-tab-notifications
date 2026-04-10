@@ -16,14 +16,16 @@ The topic is pulled from Claude Code's session metadata — it's the auto-genera
 
 ## How it works
 
-```
-Claude Code fires Notification hook
-  → sleep 1 (wait for Claude's own title to settle)
-  → claude-tab-title reads session_id from hook stdin
-  → looks up conversation topic in ~/.claude/projects/*/sessions-index.json
-  → sets terminal title via OSC 0 escape (printf '\033]0;TITLE\007')
-  → VS Code/Cursor picks it up via ${sequence} tab title variable
-```
+Four Claude Code hooks fire at different points in a session's lifecycle. Each runs `claude-tab-title` asynchronously after a 1-second delay (to avoid being overwritten by Claude Code's own title management):
+
+| Hook | Fires when | Sets title to |
+|------|-----------|---------------|
+| `SessionStart` | Session opens | `<topic>` |
+| `UserPromptSubmit` | You send a message | `<topic>` |
+| `Notification` | Claude needs input | `🔔 WAITING — <topic>` |
+| `Stop` | Claude finishes | `✅ DONE — <topic>` |
+
+The script reads the `session_id` from hook stdin, looks up the conversation summary in `~/.claude/projects/*/sessions-index.json`, and sets the terminal title via the OSC 0 escape sequence (`printf '\033]0;TITLE\007'`). VS Code/Cursor display this when `terminal.integrated.tabs.title` is set to `${sequence}`.
 
 ## Requirements
 
@@ -44,7 +46,7 @@ cd claude-code-tab-notifications
 
 The install script:
 1. Copies `claude-tab-title` to `~/.local/bin/`
-2. Adds `Notification` and `Stop` hooks to `~/.claude/settings.json`
+2. Adds `SessionStart`, `UserPromptSubmit`, `Notification`, and `Stop` hooks to `~/.claude/settings.json`
 3. Sets `terminal.integrated.tabs.title` to `${sequence}` in your VS Code/Cursor user settings
 
 ### Manual

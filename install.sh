@@ -37,10 +37,10 @@ fi
 CLAUDE_SETTINGS="${HOME}/.claude/settings.json"
 
 if [ -f "$CLAUDE_SETTINGS" ]; then
-  # Check if hooks already exist
-  if jq -e '.hooks.Notification' "$CLAUDE_SETTINGS" &>/dev/null; then
-    echo "    Claude Code Notification hook already exists — skipping."
-    echo "    To add manually, see README.md for the hooks JSON."
+  # Check if tab-title hooks already exist
+  if jq -e '.hooks.Notification[0].hooks[] | select(.command | test("claude-tab-title"))' "$CLAUDE_SETTINGS" &>/dev/null; then
+    echo "    claude-tab-title hooks already configured — skipping."
+    echo "    To update manually, see README.md for the hooks JSON."
   else
     # Merge hooks into existing settings
     jq '.hooks = (.hooks // {}) * {
