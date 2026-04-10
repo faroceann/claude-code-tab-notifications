@@ -2,7 +2,7 @@
 
 See at a glance which Claude Code terminal needs your attention.
 
-When you're running multiple Claude Code sessions in VS Code or Cursor, the terminal tab sidebar shows generic "Claude Code" for every tab. This makes it impossible to tell which session is waiting for input and which is still working.
+When you're running multiple Claude Code sessions in VS Code or Cursor, the terminal tab sidebar shows generic "bash" for every tab. This makes it impossible to tell sessions apart, see which sessions are waiting for input and which are still working.
 
 This project uses Claude Code [hooks](https://docs.anthropic.com/en/docs/claude-code/hooks) and the standard OSC 0 terminal escape sequence to rename tabs based on session status:
 
